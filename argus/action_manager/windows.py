@@ -204,7 +204,7 @@ class WindowsActionManager(base.BaseActionManager):
             Paths to files that should exist if the hearbeat patch is
             aplied.
         """
-        test_cmd = 'Test-Path {}'
+        test_cmd = 'Test-Path "{}"'
         check_cmds = [test_cmd.format(path) for path in searched_paths or []]
         for check_cmd in check_cmds:
             self._client.run_command_until_condition(
@@ -233,7 +233,7 @@ class WindowsActionManager(base.BaseActionManager):
             raise exceptions.ArgusCLIError("The path is not a file.")
 
         LOG.debug("Remove file %s", path)
-        cmd = "Remove-Item -Path '{}'".format(path)
+        cmd = "Remove-Item -Force -Path '{}'".format(path)
         self._client.run_command_with_retry(cmd, command_type=util.POWERSHELL)
 
     def rmdir(self, path):
@@ -241,11 +241,11 @@ class WindowsActionManager(base.BaseActionManager):
         if not self.exists(path):
             raise exceptions.ArgusCLIError("Invalid Path.")
 
-        if not self.is_file(path):
+        if not self.is_dir(path):
             raise exceptions.ArgusCLIError("The path is not a directory.")
 
         LOG.debug("Remove directory  %s", path)
-        cmd = "Remove-Item -Recurse -Path '{}'".format(path)
+        cmd = "Remove-Item -Force -Recurse -Path '{}'".format(path)
         self._client.run_command_with_retry(cmd, command_type=util.POWERSHELL)
 
     def _exists(self, path, path_type):
